@@ -7,7 +7,37 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+        <TextBox x:Name="AddDeviceBox" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="151" PlaceholderText="Device Name"/>
+        <Button x:Name="AddDeviceBtn" Content="Add device" HorizontalAlignment="Left" Margin="166,10,0,0" VerticalAlignment="Top" Click="AddDeviceBtn_Click"/>
+        <Button x:Name="GetDevicesButton" Content="Get devices" HorizontalAlignment="Left" Margin="10,360,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.015,1.531" Width="95" Click="GetDevicesButton_Click"/>
+        <Button x:Name="DeleteDeviceButton" Content="Delete device" HorizontalAlignment="Left" Margin="203,73,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.462,-0.062" Click="DeleteDeviceButton_Click" IsEnabled="False"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="282" Margin="10,73,0,0" VerticalAlignment="Top" Width="188">
+            <ListView x:Name="DeviceList" HorizontalAlignment="Left" Height="262" Margin="9,9,0,0" VerticalAlignment="Top" Width="168" SelectionChanged="DeviceList_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="Black" BorderThickness="1">
+                                <TextBlock Text="{Binding DeviceId}" />
+                            </Border>
+                            <TextBlock Text="{Binding Status}" HorizontalAlignment="Right"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+        <CheckBox x:Name="StatusCheck" Content="Status" HorizontalAlignment="Left" Margin="265,10,0,0" VerticalAlignment="Top" Width="58"/>
+        <RadioButton x:Name="TrueRadio" Content="True" HorizontalAlignment="Left" Margin="203,110,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <RadioButton x:Name="FalseRadio" Content="False" HorizontalAlignment="Left" Margin="203,141,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="UpdateDevice" Content="Update Device" HorizontalAlignment="Left" Margin="203,178,0,0" VerticalAlignment="Top" Click="UpdateDevice_Click" IsEnabled="False"/>
+        <Button x:Name="SendButton" Content="Send Message" HorizontalAlignment="Left" Margin="203,360,0,0" VerticalAlignment="Top" Click="SendButton_Click"/>
+        <TextBox HorizontalAlignment="Left" Margin="203,215,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="117" Height="140" PlaceholderText="Type here your message"/>
+        <TextBlock HorizontalAlignment="Left" Margin="328,73,0,0" TextWrapping="Wrap" Text="Device name:" VerticalAlignment="Top" FontSize="18" FontWeight="Bold"/>
+        <TextBlock x:Name="DeviceNameBlock" HorizontalAlignment="Left" Margin="328,102,0,0" TextWrapping="Wrap" Text="CalvinSimulator" VerticalAlignment="Top" FontSize="18"/>
+        <ToggleSwitch Header="Device Status
+                      " HorizontalAlignment="Left" Margin="328,147,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="DeviceStatusButton" Content="Not Clicked" HorizontalAlignment="Left" Margin="328,215,0,0" VerticalAlignment="Top" Width="124" PointerPressed="DeviceStatusButton_PointerPressed" PointerEntered="DeviceStatusButton_PointerEntered" PointerExited="DeviceStatusButton_PointerExited" IsEnabled="False" Click="DeviceStatus_Clicked"/>
+
 
     </Grid>
 </Page>
