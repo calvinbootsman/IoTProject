@@ -36,7 +36,7 @@
         <TextBlock x:Name="DeviceNameBlock" HorizontalAlignment="Left" Margin="328,102,0,0" TextWrapping="Wrap" Text="CalvinSimulator" VerticalAlignment="Top" FontSize="18"/>
         <ToggleSwitch Header="Device Status
                       " HorizontalAlignment="Left" Margin="328,147,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="DeviceStatusButton" Content="Not Clicked" HorizontalAlignment="Left" Margin="328,215,0,0" VerticalAlignment="Top" Width="124" PointerPressed="DeviceStatusButton_PointerPressed" PointerEntered="DeviceStatusButton_PointerEntered" PointerExited="DeviceStatusButton_PointerExited" IsEnabled="False" Click="DeviceStatus_Clicked"/>
+        <Button x:Name="DeviceStatusButton" Content="Not Clicked" HorizontalAlignment="Left" Margin="328,215,0,0" VerticalAlignment="Top" Width="124" PointerPressed="DeviceStatusButton_PointerPressed" PointerExited="DeviceStatusButton_PointerExited" IsEnabled="False" Click="DeviceStatus_Clicked"/>
 
 
     </Grid>

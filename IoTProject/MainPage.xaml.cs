@@ -1,7 +1,10 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.Devices.Gpio;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -19,23 +22,45 @@ namespace IoTProject
         public static string DeviceName = "CalvinSimulator";
         List<AzureDevices> list = new List<AzureDevices>();
         AzureDevices MainDevice = new AzureDevices
+    
         {
-            DeviceId = DeviceName,
+            DeviceId = "CalvinSimulator",
             Status = false
         };
+
+        public  GpioPin ledPin;
+         public  GpioPin buttonPin;
+        private const int LED_PIN1 = 6;
+
+        private const int BUTTON_PIN = 5;
+        public GpioPinValue ledPinValue = GpioPinValue.High;
+   
+
+        Dictionary<string, int> LEDS = new Dictionary<string, int>();
+
         public MainPage()
         {
             this.InitializeComponent();
+
+
+            InitGPIO();
+
             var sender = new object();
             var e = new RoutedEventArgs();
             GetDevicesButton_Click(sender, e);
             ListenForMessages();
 
+
             MyAzureClass myAzureClass = new MyAzureClass();
-            Task.Run(async () => { MainDevice = await myAzureClass.AddDeviceToCloud(MainDevice.DeviceId, MainDevice.Status); }).GetAwaiter().GetResult();
+            // MainDevice = myAzureClass.AddDeviceToCloud(MainDevice.DeviceId, MainDevice.Status).Result;
+            // Task.Run(async () => { MainDevice = await myAzureClass.AddDeviceToCloud(MainDevice.DeviceId, MainDevice.Status); }).GetAwaiter().GetResult();
             //AsyncContext.Run(() => );
-            while (MainDevice.PartitionKey == null) { }
+            //while (MainDevice.PartitionKey == null) { }
+            MainDevice.AssignRowKey();
+            MainDevice.AssignPartitionKey();
+
             DeviceStatusButton.IsEnabled = true;
+           
         }
 
         private async void AddDeviceBtn_Click(object sender, RoutedEventArgs e)
@@ -98,6 +123,15 @@ namespace IoTProject
         {
             MyAzureClass myAzureClass = new MyAzureClass();
             list = await myAzureClass.GetDevices();
+            var AnyDeviceHigh = false;
+            foreach (AzureDevices x in list)
+            {
+                if (x.Status)
+                {
+                    AnyDeviceHigh = true;
+                }
+            }
+            updateLED(AnyDeviceHigh);
             DeviceList.ItemsSource = null;
             DeviceList.ItemsSource = list;
         }
@@ -111,10 +145,12 @@ namespace IoTProject
                 {
                     Debug.WriteLine("Received: " + str);
                     RefreshList();
+                   // UpdateLeds(str);
                 }
                 Debug.WriteLine("Received: " + str);
             }
         }
+
 
         private void DeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -140,9 +176,69 @@ namespace IoTProject
             Debug.WriteLine("Button Pressed");
         }
 
-        private void DeviceStatusButton_PointerEntered(object sender, PointerRoutedEventArgs e)
+        private void InitGPIO()
         {
+            var gpio = GpioController.GetDefault();
+
+            // Show an error if there is no GPIO controller
+           
+
+            buttonPin = gpio.OpenPin(BUTTON_PIN);
+            if (buttonPin.IsDriveModeSupported(GpioPinDriveMode.InputPullUp))
+                buttonPin.SetDriveMode(GpioPinDriveMode.InputPullUp);
+            else
+                buttonPin.SetDriveMode(GpioPinDriveMode.Input);
+
             
+
+            // ledPin = gpio.OpenPin(LED_PIN1);
+            //  ledPin.Write(GpioPinValue.High);
+            // ledPin.SetDriveMode(GpioPinDriveMode.Output);
+
+
+            // Set a debounce timeout to filter out switch bounce noise from a button press
+            buttonPin.DebounceTimeout = TimeSpan.FromMilliseconds(50);
+
+            // Register for the ValueChanged event so our buttonPin_ValueChanged 
+            // function is called when the button is pressed
+            buttonPin.ValueChanged += buttonPin_ValueChangedAsync;
+            ledPin = gpio.OpenPin(LED_PIN1);
+
+            ledPin.SetDriveMode(GpioPinDriveMode.Output);
+            ledPin.Write(GpioPinValue.High);
+
+        }
+
+
+        public void updateLED(Boolean state)
+        {
+            if (!state)
+            {
+                ledPin.Write(GpioPinValue.High);
+            }
+            else
+            {
+                ledPin.Write(GpioPinValue.Low);
+            }
+        }
+
+
+        private async void buttonPin_ValueChangedAsync(GpioPin sender, GpioPinValueChangedEventArgs e)
+        {
+            MyAzureClass myAzureClass = new MyAzureClass();
+
+            // toggle the state of the LED every time the button is pressed
+            if (e.Edge == GpioPinEdge.FallingEdge)
+            {
+                ledPinValue = (ledPinValue == GpioPinValue.Low) ?
+                    GpioPinValue.High : GpioPinValue.Low;
+                 ledPin.Write(ledPinValue);
+                MainDevice.Status = Convert.ToBoolean(ledPinValue);
+                 myAzureClass.UpdateRecordInTable(MainDevice);
+                 AzureIoTHub.SendDeviceToCloudMessageAsync();
+
+            }
+
         }
 
         private void DeviceStatusButton_PointerExited(object sender, PointerRoutedEventArgs e)
@@ -155,11 +251,6 @@ namespace IoTProject
                 AzureIoTHub.SendDeviceToCloudMessageAsync();
                 Debug.WriteLine("Button Released");
             }
-        }
-
-        private void Grid_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-
         }
 
         private void DeviceStatus_Clicked(object sender, RoutedEventArgs e)

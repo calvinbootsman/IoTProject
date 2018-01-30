@@ -9,18 +9,7 @@ namespace IoTProject
 {
     class MyAzureClass
     {
-        public static async void ListenForMessages()
-        {
-            while (true)
-            {
-                string str = await AzureIoTHub.ReceiveCloudToDeviceMessageAsync();
-                if (str == "Update")
-                {
-                    MainPage main = new MainPage();
-                    main.RefreshList();
-                }
-            }
-        }
+        
 
         public CloudTable GetCloudTable()
         {
@@ -62,12 +51,12 @@ namespace IoTProject
             TableContinuationToken token = null;
             TableQuery<AzureDevices> tableQuery = new TableQuery<AzureDevices>();
             var queriedTable = await table.ExecuteQuerySegmentedAsync(tableQuery, token);
-
+            
             foreach (AzureDevices devices in queriedTable)
             {
                 list.Add(devices);
             }
-            return list;
+                        return list;
         }
 
         public async void DeleteRecordinTable(string DeviceId)
@@ -93,7 +82,7 @@ namespace IoTProject
             AzureDevices devices = await AzureDevices.RetrieveRecord(table, device.DeviceId);
             if (devices != null)
             {
-                TableOperation tableOperation = TableOperation.Replace(device);
+                TableOperation tableOperation = TableOperation.InsertOrReplace(device);
                 await table.ExecuteAsync(tableOperation);
                 Console.WriteLine("Record updated");
             }

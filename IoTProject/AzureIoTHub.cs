@@ -36,7 +36,7 @@ class AzureIoTHub
     {
         ServiceDeviceStatus deviceStatus = new ServiceDeviceStatus()
         {
-            SourceDeviceId = MainPage.DeviceName,
+            SourceDeviceId = "CalvinSimulator",
             Time = DateTime.Now.ToString("O"),
             Command = "Update",
             CommandACK = "0",
@@ -45,7 +45,7 @@ class AzureIoTHub
 
         CreateClient();
 
-        string messageString = JsonConvert.SerializeObject(deviceStatus, Formatting.Indented);
+        string messageString = JsonConvert.SerializeObject(deviceStatus, Formatting.None);
 
         var message = new Message(Encoding.ASCII.GetBytes(messageString));
 
@@ -71,5 +71,10 @@ class AzureIoTHub
 
             await Task.Delay(TimeSpan.FromSeconds(1));
         }
+    }
+
+    public void updateLed(Boolean value)
+    {
+
     }
 }
