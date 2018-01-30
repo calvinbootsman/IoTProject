@@ -19,12 +19,12 @@ namespace IoTProject
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public static string DeviceName = "CalvinSimulator";
+        public static string DeviceName = "Device1";
         List<AzureDevices> list = new List<AzureDevices>();
         AzureDevices MainDevice = new AzureDevices
     
         {
-            DeviceId = "CalvinSimulator",
+            DeviceId = "Device1",
             Status = false
         };
 
@@ -205,7 +205,7 @@ namespace IoTProject
             ledPin = gpio.OpenPin(LED_PIN1);
 
             ledPin.SetDriveMode(GpioPinDriveMode.Output);
-            ledPin.Write(GpioPinValue.High);
+            ledPin.Write(GpioPinValue.Low);
 
         }
 
@@ -232,7 +232,7 @@ namespace IoTProject
             {
                 ledPinValue = (ledPinValue == GpioPinValue.Low) ?
                     GpioPinValue.High : GpioPinValue.Low;
-                 ledPin.Write(ledPinValue);
+                // ledPin.Write(ledPinValue);
                 MainDevice.Status = Convert.ToBoolean(ledPinValue);
                  myAzureClass.UpdateRecordInTable(MainDevice);
                  AzureIoTHub.SendDeviceToCloudMessageAsync();

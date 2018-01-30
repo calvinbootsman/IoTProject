@@ -23,7 +23,7 @@ class AzureIoTHub
     // Note: this connection string is specific to the device "test". To configure other devices,
     // see information on iothub-explorer at http://aka.ms/iothubgetstartedVSCS
     //
-    const string deviceConnectionString = "HostName=EPDEgroup8Hanze.azure-devices.net;DeviceId=test;SharedAccessKey=KZrtUfQVHwvKY/tcreHOAnBStxLwVI7Bl+9NY+zmVnk=";
+    const string deviceConnectionString = "HostName=EPDEgroup8Hanze.azure-devices.net;DeviceId=Device1;SharedAccessKey=fwMmK1qFnJTtDoXskVlc659KzHzzPZR7CuGWYshcMhQ=";
 
     //
     // To monitor messages sent to device "kraaa" use iothub-explorer as follows:
@@ -36,11 +36,11 @@ class AzureIoTHub
     {
         ServiceDeviceStatus deviceStatus = new ServiceDeviceStatus()
         {
-            SourceDeviceId = "CalvinSimulator",
+            SourceDeviceId = "Device1",
             Time = DateTime.Now.ToString("O"),
             Command = "Update",
             CommandACK = "0",
-            TargetDeviceId = "test"
+            TargetDeviceId = "Device1"
         };
 
         CreateClient();
